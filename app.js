@@ -7,7 +7,8 @@ axios
         const rawData = data.list;
         // queryNear39(rawData);
         // queryAll(rawData);
-        queryNear39TopStandard(rawData);
+        // queryNear39TopStandard(rawData);
+        queryNear39BottomStandardStandalone(rawData, 5);
         // queryNear39BottomStandard(rawData);
         // queryAllTop10Standard(rawData);
     });
@@ -62,7 +63,7 @@ function queryAll(rawData) {
 }
 
 // 39附近最多人选
-function queryNear39TopStandard(rawData) {
+function queryNear39TopStandard(rawData, rankTopNum = 10) {
     let arr = [];
     for (const item of rawData) {
         const code = +item.code.replace('-', '.');
@@ -72,8 +73,47 @@ function queryNear39TopStandard(rawData) {
         if (isStandard(item)) arr.push(item);
     }
     arr.sort((a, b) => (Number(a.cares) > Number(b.cares) ? -1 : 0));
-    const sorted = arr.slice(0, 20).map((item) => item.code + ':' + item.cares);
+    const sorted = arr
+        .slice(0, rankTopNum)
+        .map((item) => item.code + ':' + item.cares);
     console.log(`near 39 sorted standard:\n${sorted.join('\n')}`);
+}
+
+// 39附近最多人选独立
+function queryNear39TopStandardStandalone(rawData, rankTopNum = 10) {
+    let arr = [];
+    for (const item of rawData) {
+        const code = +item.code.replace('-', '.');
+        if (!isNear39(code)) continue;
+        if (!isStandalone(code)) continue;
+        if (isStandard(item)) arr.push(item);
+    }
+    arr.sort((a, b) => (Number(a.cares) > Number(b.cares) ? -1 : 0));
+    const sorted = arr
+        .slice(0, rankTopNum)
+        .map((item) => item.code + ':' + item.cares);
+    console.log(`queryNear39TopStandardStandalone:\n${sorted.join('\n')}`);
+}
+
+// 39附近最少人选独立
+function queryNear39BottomStandardStandalone(rawData, rankTopNum = 10) {
+    let arr = [];
+    for (const item of rawData) {
+        const code = +item.code.replace('-', '.');
+        if (!isNear39(code)) continue;
+        if (!isStandalone(code)) continue;
+        if (isStandard(item)) arr.push(item);
+    }
+    arr.sort((a, b) => (Number(a.cares) <= Number(b.cares) ? -1 : 0));
+    const sorted = arr
+        .slice(0, rankTopNum)
+        .map((item) => item.code + ':' + item.cares);
+    console.log(`queryNear39TopStandardStandalone:\n${sorted.join('\n')}`);
+}
+
+function isStandalone(code) {
+    const targets = [157, 158, 161, 162, 163, 164, 167];
+    return targets.includes(code);
 }
 
 // 39附近最少人选
